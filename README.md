@@ -1,6 +1,6 @@
 # eBikeMe
 
-Fahrrad-Ausleihe-Applikation
+## Fahrrad-Ausleihe-Applikation
 
 Deine Kundin beauftragt Dich mit der Erstellung einer Applikation („eBikeMe“) zur
 Verwaltung von Ausleihen für Fahrräder. Durch diese Applikation soll es möglich sein:
