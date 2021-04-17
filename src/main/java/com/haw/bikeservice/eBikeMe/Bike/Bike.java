@@ -1,5 +1,6 @@
-package com.haw.bikeservice.eBikeMe;
+package com.haw.bikeservice.eBikeMe.Bike;
 
+import com.haw.bikeservice.eBikeMe.Customer.Status;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

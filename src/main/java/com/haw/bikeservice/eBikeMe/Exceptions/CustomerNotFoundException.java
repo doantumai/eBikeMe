@@ -1,4 +1,4 @@
-package com.haw.bikeservice.eBikeMe;
+package com.haw.bikeservice.eBikeMe.Exceptions;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
@@ -17,7 +17,7 @@ public class CustomerNotFoundException extends Exception {
         this.lastName = "";
     }
 
-    CustomerNotFoundException(String lastName) {
+    public CustomerNotFoundException(String lastName) {
         super(String.format("Could not find customer with lastname %s.", lastName));
 
         this.customerId = 0L;

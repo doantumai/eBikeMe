@@ -1,5 +1,13 @@
 package com.haw.bikeservice.eBikeMe;
 
+import com.haw.bikeservice.eBikeMe.Bike.Bike;
+import com.haw.bikeservice.eBikeMe.Customer.Customer;
+import com.haw.bikeservice.eBikeMe.Customer.Status;
+import com.haw.bikeservice.eBikeMe.Repositories.BikeRepository;
+import com.haw.bikeservice.eBikeMe.Repositories.CustomerRepository;
+import com.haw.bikeservice.eBikeMe.Exceptions.CustomerNotFoundException;
+import lombok.EqualsAndHashCode;
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +80,7 @@ public class BikeService {
      */
     public void returnBike(String cusName, String bikeName) throws CustomerNotFoundException, BikeNotAvailableException {
         Customer customer = customerRepository.findByLastName(cusName)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer does not exist"));
+                .orElseThrow(() -> new CustomerNotFoundException(cusName));
         Bike bike = bikeRepository.findByName(bikeName)
                 .orElseThrow(() -> new BikeNotAvailableException(bikeName));
         if (customer.getBikes().contains(bike)) {
@@ -113,5 +121,27 @@ public class BikeService {
 
 //        bike.setStatus(Status.REPAIRED);
         bike.setStatus(Status.AVAILABLE);
+    }
+
+    @Value
+    @EqualsAndHashCode(callSuper=false)
+    public static class BikeNotAvailableException extends Exception{
+        private final Long bikeId;
+
+        private final String bikeName;
+
+        public BikeNotAvailableException(Long bikeId) {
+            super(String.format("Could not find bike with number %d.", bikeId));
+            this.bikeId = bikeId;
+            this.bikeName = "";
+        }
+
+        public BikeNotAvailableException(String bikeName) {
+            super(String.format("This bike does not exist or is not available", bikeName));
+            this.bikeName = bikeName;
+            this.bikeId = 0L;
+        }
+
+
     }
 }

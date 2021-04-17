@@ -1,5 +1,8 @@
-package com.haw.bikeservice.eBikeMe;
+package com.haw.bikeservice.eBikeMe.Repositories;
 
+import com.haw.bikeservice.eBikeMe.Customer.Customer;
+import com.haw.bikeservice.eBikeMe.Customer.Gender;
+import com.haw.bikeservice.eBikeMe.EBikeMeApplication;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = EBikeMeApplication.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -26,7 +28,7 @@ class CustomerRepositoryTest {
         this.customerRepository.deleteAll();
 
         Customer customer = new Customer("Tu Mai", "Doan",
-                "stefan.sarstedt@haw-hamburg.de",  Gender.FEMALE);
+                "stefan.sarstedt@haw-hamburg.de", Gender.FEMALE);
 
         customerRepository.save(customer);
     }

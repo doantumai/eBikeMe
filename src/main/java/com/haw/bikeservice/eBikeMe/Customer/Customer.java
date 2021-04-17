@@ -1,5 +1,6 @@
-package com.haw.bikeservice.eBikeMe;
+package com.haw.bikeservice.eBikeMe.Customer;
 
+import com.haw.bikeservice.eBikeMe.Bike.Bike;
 import lombok.*;
 
 import javax.persistence.Entity;

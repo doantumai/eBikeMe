@@ -1,4 +1,4 @@
-package com.haw.bikeservice.eBikeMe;
+package com.haw.bikeservice.eBikeMe.Exceptions;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
