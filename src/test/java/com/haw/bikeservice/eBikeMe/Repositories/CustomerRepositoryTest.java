@@ -15,6 +15,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * @author Tu Mai Doan (tumai.doan@haw-hamburg.de)
+ */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = EBikeMeApplication.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles(profiles = "testing")

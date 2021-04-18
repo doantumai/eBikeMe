@@ -3,6 +3,9 @@ package com.haw.bikeservice.eBikeMe.Exceptions;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 
+/**
+ * @author Tu Mai Doan (tumai.doan@haw-hamburg.de)
+ */
 @Value
 @EqualsAndHashCode(callSuper=false)
 public class CustomerNotFoundException extends Exception {

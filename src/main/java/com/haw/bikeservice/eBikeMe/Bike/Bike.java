@@ -11,6 +11,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * @author Tu Mai Doan (tumai.doan@haw-hamburg.de)
+ */
 @Entity
 @Data
 @AllArgsConstructor
@@ -37,5 +40,13 @@ public class Bike {
 
     public void setStatus(Status status){
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 }

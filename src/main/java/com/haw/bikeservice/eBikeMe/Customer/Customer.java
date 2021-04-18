@@ -10,8 +10,11 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Tu Mai Doan (tumai.doan@haw-hamburg.de)
+ */
 @Entity
-@Data
+@Getter //funktioniert nicht?
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Customer {
@@ -52,5 +55,9 @@ public class Customer {
 
     public List<Bike> getBikes() {
         return bikes;
+    }
+
+    public String getFirstName() {
+        return fistName;
     }
 }

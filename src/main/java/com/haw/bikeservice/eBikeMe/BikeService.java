@@ -3,6 +3,7 @@ package com.haw.bikeservice.eBikeMe;
 import com.haw.bikeservice.eBikeMe.Bike.Bike;
 import com.haw.bikeservice.eBikeMe.Customer.Customer;
 import com.haw.bikeservice.eBikeMe.Customer.Status;
+import com.haw.bikeservice.eBikeMe.Exceptions.BikeNotAvailableException;
 import com.haw.bikeservice.eBikeMe.Repositories.BikeRepository;
 import com.haw.bikeservice.eBikeMe.Repositories.CustomerRepository;
 import com.haw.bikeservice.eBikeMe.Exceptions.CustomerNotFoundException;
@@ -14,6 +15,17 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 
+/**
+ * Klasse zur Verwaltung von Ausleihen für Fahrraeder. Die folgenden Funktionen sind definiert:
+ * - funktionstüchtige Fahrräder zu entleihen
+ * - Fahrräder zurückzugeben
+ * - Defekte Fahrräder zu melden
+ * - Den Ausleihstatus aller Fahrräder einzusehen
+ * - Fahrräder hinzuzufügen bzw. aus dem Inventar zu entfernen
+ * - Fahrräder wieder als „repariert“ zu markieren
+ *
+ * @author Tu Mai Doan (tumai.doan@haw-hamburg.de)
+ */
 @Service
 public class BikeService {
 
@@ -41,12 +53,12 @@ public class BikeService {
      * oder aber es ist defekt/ in Reparatur, wird eine Exception geworfen
      * Wenn der Kunde noch nicht im Repository ist, wird er eingetragen
      *
-     * @param customer Name des Kunden
+     * @param cusLastName Name des Kunden
      * @param bikeName Name des Fahrrads
      * @throws BikeNotAvailableException Exception
      */
     @Transactional
-    public void lendingBike(String customer, String bikeName) throws BikeNotAvailableException {
+    public void lendBike(String cusLastName, String bikeName) throws BikeNotAvailableException {
         Bike bike = bikeRepository.findByName(bikeName)
                 .orElseThrow(() -> new BikeNotAvailableException(bikeName));
 
@@ -54,40 +66,35 @@ public class BikeService {
             throw new BikeNotAvailableException(bikeName);
         }
 
-        if(!customerRepository.findByLastName(customer).isPresent()){
-            customerRepository.save(new Customer(customer));
+        if(!customerRepository.findByLastName(cusLastName).isPresent()){
+            customerRepository.save(new Customer(cusLastName));
         }
-        Customer cus = customerRepository.findByLastName(customer).get();
+        Customer cus = customerRepository.findByLastName(cusLastName).get();
         cus.addBike(bike);
-    }
-
-    /**
-     * Methode zum melden eines defekten Fahrrads
-     * @param bikeName Name des Fahrrads
-     */
-    public void reportDefect(String bikeName) throws BikeNotAvailableException {
-        Bike bike = bikeRepository.findByName(bikeName)
-                .orElseThrow(() -> new BikeNotAvailableException(bikeName));
-        bike.setStatus(Status.DEFECT);
+        customerRepository.save(cus);
     }
 
     /**
      * Methode zur Zückgabe eines Fahrrads
      *
-     * @param cusName Name des Kunden
+     * @param cusLastName Name des Kunden
      * @param bikeName Name des Fahrrads
      * @throws CustomerNotFoundException Exception
      */
-    public void returnBike(String cusName, String bikeName) throws CustomerNotFoundException, BikeNotAvailableException {
-        Customer customer = customerRepository.findByLastName(cusName)
-                .orElseThrow(() -> new CustomerNotFoundException(cusName));
+    @Transactional
+    public void returnBike(String cusLastName, String bikeName) throws CustomerNotFoundException, BikeNotAvailableException {
+        Customer customer = customerRepository.findByLastName(cusLastName)
+                .orElseThrow(() -> new CustomerNotFoundException(cusLastName));
+
         Bike bike = bikeRepository.findByName(bikeName)
                 .orElseThrow(() -> new BikeNotAvailableException(bikeName));
+
         if (customer.getBikes().contains(bike)) {
             customer.getBikes().remove(bike);
         }else{
-            throw new IllegalArgumentException("This Bike is not lent by Mr./Mrs. " + cusName);
+            throw new IllegalArgumentException("This Bike is not lent by Mr./Mrs. " + cusLastName);
         }
+        customerRepository.save(customer);
     }
 
     /**
@@ -104,10 +111,11 @@ public class BikeService {
      * Methode zum Entfernen eines Fahrrads
      * @param bikeName Name des Fahrrad
      */
-    public void removeBike(String bikeName){
+    public void removeBike(String bikeName) throws BikeNotAvailableException {
         Bike bike = bikeRepository.findByName(bikeName)
-                .orElseThrow(() ->  new IllegalArgumentException("This Bike does not exist"));
+                .orElseThrow(() ->  new BikeNotAvailableException(bikeName));
         bikeRepository.delete(bike);
+        //save?
     }
 
     /**
@@ -115,33 +123,26 @@ public class BikeService {
      * es wird auf dem Status Status.AVAILABLE gesetzt
      * @param bikeName Name des Fahrrads
      */
-    public void markStatusRepaired(String bikeName){
-        Bike bike = bikeRepository.findByName(bikeName)
-                .orElseThrow(() ->  new IllegalArgumentException("This Bike does not exist"));
+    public void markStatusRepaired(String bikeName) throws BikeNotAvailableException {
+       Bike bike = bikeRepository.findByName(bikeName)
+                .orElseThrow(() ->  new BikeNotAvailableException(bikeName));
 
 //        bike.setStatus(Status.REPAIRED);
         bike.setStatus(Status.AVAILABLE);
+        bikeRepository.save(bike);
     }
 
-    @Value
-    @EqualsAndHashCode(callSuper=false)
-    public static class BikeNotAvailableException extends Exception{
-        private final Long bikeId;
+    /**
+     * Methode zum melden eines defekten Fahrrads
+     * @param bikeName Name des Fahrrads
+     */
+    public void reportDefect(String bikeName) throws BikeNotAvailableException {
+        Bike bike = bikeRepository.findByName(bikeName)
+                .orElseThrow(() -> new BikeNotAvailableException(bikeName));
 
-        private final String bikeName;
+        bike.setStatus(Status.DEFECT);
 
-        public BikeNotAvailableException(Long bikeId) {
-            super(String.format("Could not find bike with number %d.", bikeId));
-            this.bikeId = bikeId;
-            this.bikeName = "";
-        }
-
-        public BikeNotAvailableException(String bikeName) {
-            super(String.format("This bike does not exist or is not available", bikeName));
-            this.bikeName = bikeName;
-            this.bikeId = 0L;
-        }
-
-
+        bikeRepository.save(bike);
     }
+
 }
